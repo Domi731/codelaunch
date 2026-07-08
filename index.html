@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeLaunch</title>
+
+  <!-- Google Fonts: Press Start 2P (8-bit headings) + Space Mono (typewriter body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'system-ui', 'monospace'],
+            mono:  ['"Space Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            signal:  '#FF0000',  // knalliges Rot
+            cobalt:  '#0000FF',  // Elektrik-Blau
+            ink:     '#000000',  // hartes Schwarz für Borders/Text
+          },
+          boxShadow: {
+            // harte Offset-Schatten statt weicher drop-shadow
+            'brutal':    '8px 8px 0 0 #000000',
+            'brutal-sm': '4px 4px 0 0 #000000',
+            'brutal-lg': '12px 12px 0 0 #000000',
+            'brutal-red':    '8px 8px 0 0 #FF0000',
+            'brutal-blue':   '8px 8px 0 0 #0000FF',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Space Mono', ui-monospace, monospace; }
+    h1, h2, .pixel { font-family: 'Press Start 2P', monospace; letter-spacing: 0.02em; }
+
+    /* sanftes, rhythmisches "Wobble" für die schwebenden Pixel-Sterne */
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+      50%      { transform: translateY(-10px) rotate(var(--r, 0deg)); }
+    }
+    .floaty { animation: floaty 3.5s ease-in-out infinite; }
+
+    /* hand-gezeichneter "Look" für den Filzstift-Kreis: rauer, wackeliger Stroke */
+    .marker-circle path { stroke-dasharray: 600; stroke-dashoffset: 600;
+      animation: drawCircle 1.6s ease-out forwards; }
+    @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+
+    /* winzige Cursor-Blink-Animation */
+    .blink { animation: blink 1s steps(2, end) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Auswahl-Farbe rebellisch */
+    ::selection { background: #FF0000; color: #FFFFFF; }
+  </style>
+</head>
+
+<body class="bg-white text-black font-mono antialiased min-h-screen overflow-x-hidden">
+
+  <!-- =========================================================
+       HERO SECTION
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28">
+
+    <!-- Hintergrund-Raster (subtil, brutalistisch) -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- ===== Schwebende Pixel-Collage-Elemente (Hintergrund) ===== -->
+    <div aria-hidden="true" class="pointer-events-none">
+
+      <!-- 8-Bit Stern oben links -->
+      <svg class="floaty absolute top-8 left-6 md:top-14 md:left-16 w-10 h-10 md:w-14 md:h-14"
+           style="--r:-6deg" viewBox="0 0 24 24" fill="#000">
+        <polygon points="12,1 15,9 23,9 16.5,14 19,22 12,17 5,22 7.5,14 1,9 9,9" />
+      </svg>
+
+      <!-- Blitz oben rechts -->
+      <svg class="floaty absolute top-10 right-10 md:top-20 md:right-24 w-12 h-12 md:w-16 md:h-16"
+           style="--r:8deg; animation-delay:.4s" viewBox="0 0 24 24" fill="#FF0000">
+        <polygon points="13,1 3,14 11,14 9,23 21,9 13,9 15,1" />
+      </svg>
+
+      <!-- Cursor-Blink links mittig -->
+      <svg class="absolute top-1/3 left-4 md:left-10 w-6 h-6 md:w-8 md:h-8"
+           viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="5,3 5,19 9,15 12,21 14,20 11,14 17,14" />
+      </svg>
+
+      <!-- Flamme rechts -->
+      <svg class="floaty absolute top-1/2 right-6 md:right-14 w-10 h-10 md:w-12 md:h-12"
+           style="--r:-10deg; animation-delay:.8s" viewBox="0 0 24 24" fill="#FF0000">
+        <path d="M12 2c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 1 1 2 2 2 0-3-1-5 1-8z" stroke="#000" stroke-width="2" />
+      </svg>
+
+      <!-- Kleiner Stern unten links -->
+      <svg class="floaty absolute bottom-20 left-12 md:left-32 w-8 h-8 md:w-10 md:h-10"
+           style="--r:14deg; animation-delay:1.2s" viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="12,1 15,9 23,9 16.5,14 19,22 12,17 5,22 7.5,14 1,9 9,9" />
+      </svg>
+
+      <!-- 8-Bit Herz unten rechts -->
+      <svg class="floaty absolute bottom-28 right-16 md:right-40 w-10 h-10"
+           style="--r:-4deg; animation-delay:1.6s" viewBox="0 0 24 24" fill="#FF0000" stroke="#000" stroke-width="2">
+        <polygon points="12,21 3,12 3,7 7,4 11,4 12,6 13,4 17,4 21,7 21,12" />
+      </svg>
+
+      <!-- Plus-Zeichen -->
+      <svg class="floaty absolute bottom-10 right-1/3 w-8 h-8"
+           style="--r:0deg; animation-delay:2s" viewBox="0 0 24 24" fill="#000">
+        <rect x="2" y="10" width="20" height="4" />
+        <rect x="10" y="2" width="4" height="20" />
+      </svg>
+
+      <!-- Kreuze (X) -->
+      <svg class="floaty absolute top-1/4 right-1/3 w-6 h-6"
+           style="animation-delay:.2s" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3">
+        <path d="M5 5 L19 19 M19 5 L5 19" />
+      </svg>
+    </div>
+
+    <!-- ===== Inhalt ===== -->
+    <div class="relative max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-8 items-center">
+
+      <!-- LINKS: Text + CTA -->
+      <div class="relative z-10">
+
+        <!-- Tag-Pill -->
+        <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+          <span class="w-2 h-2 bg-signal"></span>
+          <span class="font-mono text-xs md:text-sm font-bold uppercase">v1.0 // indie build</span>
+        </div>
+
+        <!-- H1: massiv, 8-Bit, in Rot -->
+        <h1 class="font-pixel text-signal text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] uppercase">
+          Code<br/>Launch
+        </h1>
+
+        <!-- Untertitel in Monospace + blinkender Cursor -->
+        <p class="mt-6 font-mono text-base md:text-lg max-w-md text-black">
+          Ship your indie project to the world. <span class="font-bold">No fluff.</span> No VC.
+          Just code, pixels &amp; stubbornness<span class="blink">_</span>
+        </p>
+
+        <!-- CTA-Block (rot eingekreist) -->
+        <div class="relative inline-block mt-10">
+
+          <!-- Roter Filzstift-Kreis um den Button -->
+          <svg class="absolute -inset-6 md:-inset-8 w-[calc(100%+3rem)] md:w-[calc(100%+4rem)] h-[calc(100%+3rem)] md:h-[calc(100%+4rem)] pointer-events-none marker-circle"
+               viewBox="0 0 300 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 70 C 30 20, 110 6, 160 8 C 230 10, 280 30, 282 75 C 284 120, 210 132, 150 130 C 80 128, 24 120, 28 70 Z"
+                  stroke="#FF0000" stroke-width="6" stroke-linecap="round" />
+          </svg>
+
+          <a href="#start"
+             class="relative inline-block bg-signal text-white font-pixel text-sm md:text-base uppercase
+                    border-4 border-black shadow-brutal px-7 py-4 md:px-9 md:py-5
+                    hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
+                    active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
+                    transition-transform">
+            Start coding now &raquo;
+          </a>
+        </div>
+
+        <!-- Pfeil-Doodle + handgeschriebene Notiz unter dem Button -->
+        <div class="relative mt-12 ml-2">
+          <svg class="absolute -left-2 -top-2 w-20 h-16 md:w-24 md:h-20"
+               viewBox="0 0 120 80" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <!-- geschwungener Pfeil -->
+            <path d="M10 60 C 30 20, 60 10, 95 35" />
+            <path d="M95 35 L 80 28 M95 35 L 88 50" />
+          </svg>
+          <p class="font-mono text-sm md:text-base pl-24 md:pl-28 -mt-1">
+            <span class="font-bold">// note:</span> start coding here &rarr;
+          </p>
+        </div>
+      </div>
+
+      <!-- RECHTS: Laptop mit blauem harten Offset-Hintergrund -->
+      <div class="relative flex justify-center md:justify-end">
+
+        <!-- Blauer harter Offset-Hintergrund (Polygon/Rechteck, leicht versetzt) -->
+        <div aria-hidden="true"
+             class="absolute inset-0 md:left-6 md:top-6 lg:left-10 lg:top-10
+                    bg-cobalt border-4 border-black"></div>
+
+        <!-- Laptop-Platzhalter (CSS-Mockup, schwarz-weiß, pixelig) -->
+        <div class="relative z-10 w-full max-w-md">
+
+          <!-- "Screenshot" / Code-Snippet Karte -->
+          <div class="bg-white border-4 border-black shadow-brutal-lg">
+            <!-- Fake Browser-Bar -->
+            <div class="flex items-center gap-2 border-b-4 border-black bg-white px-3 py-2">
+              <span class="w-3 h-3 bg-signal border-2 border-black"></span>
+              <span class="w-3 h-3 bg-cobalt border-2 border-black"></span>
+              <span class="w-3 h-3 bg-white border-2 border-black"></span>
+              <span class="ml-2 font-mono text-xs">~/codelaunch.sh</span>
+            </div>
+
+            <!-- "Code" Inhalt -->
+            <div class="p-5 font-mono text-sm md:text-base leading-relaxed bg-white">
+              <p><span class="text-cobalt font-bold">$</span> codelaunch init</p>
+              <p class="text-gray-700">  &gt; booting pixels...</p>
+              <p class="text-gray-700">  &gt; injecting caffeine.exe</p>
+              <p class="text-signal font-bold">  &gt; READY TO SHIP.</p>
+              <p class="mt-3 text-black"><span class="blink">█</span></p>
+            </div>
+          </div>
+
+          <!-- Laptop-Base (Tastatur-Hint) -->
+          <div class="mx-6 mt-1 h-4 bg-white border-x-4 border-b-4 border-black"></div>
+          <div class="mx-auto h-1 w-3/4 bg-white border-x-4 border-b-4 border-black"></div>
+        </div>
+
+        <!-- Klebestreifen-Detail (Post-it Sticker) -->
+        <div class="absolute -top-4 -right-2 md:-right-6 z-20 rotate-6">
+          <div class="bg-white border-4 border-black shadow-brutal-sm px-3 py-2 font-pixel text-[10px] md:text-xs">
+            100% OPENSOURCE
+          </div>
+        </div>
+
+        <!-- "V1.0" Stempel -->
+        <div class="absolute -bottom-4 left-2 md:left-6 z-20 -rotate-6">
+          <div class="border-4 border-signal text-signal font-pixel text-[10px] md:text-xs px-3 py-1.5">
+            v1.0!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Untere Marker-Linie (divider) -->
+    <div class="relative max-w-6xl mx-auto mt-20 md:mt-28">
+      <div class="h-1 bg-black w-full"></div>
+      <div class="h-1 bg-signal w-1/3 mt-2"></div>
+      <div class="h-1 bg-cobalt w-1/6 mt-2"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SEKTION 1: GITHUB PUSH GUIDE
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
+
+    <!-- Hintergrund-Raster -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- Schwebende Pixel-Collage -->
+    <div aria-hidden="true" class="pointer-events-none">
+      <svg class="floaty absolute top-12 right-12 w-10 h-10"
+           style="--r:12deg" viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="12,1 15,9 23,9 16.5,14 19,22 12,17 5,22 7.5,14 1,9 9,9" />
+      </svg>
+      <svg class="floaty absolute bottom-20 left-8 w-8 h-8"
+           style="--r:-8deg; animation-delay:.6s" viewBox="0 0 24 24" fill="#000">
+        <polygon points="13,1 3,14 11,14 9,23 21,9 13,9 15,1" />
+      </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto">
+      <!-- Tag-Pill -->
+      <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+        <span class="w-2 h-2 bg-cobalt"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">guide_01 // 3 schritte</span>
+      </div>
+
+      <!-- Überschrift -->
+      <h2 class="font-pixel text-signal text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] uppercase">
+        Guide 01.<br/>Deploy to GitHub
+      </h2>
+
+      <p class="mt-6 font-mono text-base md:text-lg max-w-2xl text-black">
+        Drei Befehle. Ein Remote. Kein Bullshit. So pushst du deinen Code in unter 30 Sekunden.
+      </p>
+
+      <!-- Steps Grid -->
+      <div class="relative mt-14 grid md:grid-cols-3 gap-10 md:gap-8">
+
+        <!-- STEP 01 -->
+        <div class="relative">
+          <!-- Blauer Offset-Schatten -->
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>
+          <!-- Karte -->
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <!-- Step-Nummer -->
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-signal text-xl md:text-2xl">01</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">init</span>
+            </div>
+            <!-- Terminal-Box -->
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-xs md:text-sm text-white">
+              <p><span class="text-signal">$</span> git init</p>
+            </div>
+            <!-- Doodle-Pfeil + Notiz -->
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> initialisiert dein projekt
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 02 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-signal text-xl md:text-2xl">02</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">commit</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> git add .</p>
+              <p><span class="text-signal">$</span> git commit -m "first launch"</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> staged &amp; committed
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 03 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-signal text-xl md:text-2xl">03</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">push</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> git remote add origin &lt;url&gt;</p>
+              <p><span class="text-signal">$</span> git push -u origin main</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> live on github!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom-Note -->
+      <div class="mt-12 border-4 border-black bg-white p-4 md:p-5 font-mono text-xs md:text-sm">
+        <span class="font-bold">// pro tip:</span> erstelle das Repo auf github.com, bevor du <code class="bg-gray-200 px-1">git remote add</code> ausführst. sonst gibt's einen 404.
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SEKTION 2: GITHUB REPO LOOKUP (LIVE)
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
+
+    <!-- Hintergrund-Raster -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- Schwebende Cat-Icons & Branch-Symbole -->
+    <div aria-hidden="true" class="pointer-events-none">
+      <svg class="floaty absolute top-16 left-12 w-8 h-8"
+           style="--r:6deg" viewBox="0 0 24 24" fill="#000">
+        <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.04 1.53 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>
+      </svg>
+      <svg class="floaty absolute bottom-20 right-16 w-9 h-9"
+           style="--r:-10deg; animation-delay:.5s" viewBox="0 0 24 24" fill="#0000FF">
+        <circle cx="6" cy="6" r="2.5"/>
+        <circle cx="6" cy="18" r="2.5"/>
+        <circle cx="18" cy="6" r="2.5"/>
+        <circle cx="18" cy="18" r="2.5"/>
+        <path d="M6 8.5v7M8.5 6h7M8.5 18h7M18 8.5v7" stroke="#0000FF" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto">
+      <!-- Tag-Pill -->
+      <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+        <span class="w-2 h-2 bg-signal"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">live_lookup // github api</span>
+      </div>
+
+      <!-- Überschrift -->
+      <h2 class="font-pixel text-signal text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] uppercase">
+        Repo Finder<br/>Show me the Code
+      </h2>
+
+      <p class="mt-6 font-mono text-base md:text-lg max-w-2xl text-black">
+        Username rein, Public Repos raus. Holt die Liste live von der GitHub-API – mit Beschreibung, Stars und fertigem Clone-Befehl.
+      </p>
+
+      <!-- Suchformular -->
+      <form id="gh-form" class="relative mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-3xl">
+        <label for="gh-user" class="sr-only">GitHub Username</label>
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-signal font-bold select-none pointer-events-none">@</span>
+        <input id="gh-user" name="user" type="text" required autocomplete="off"
+               placeholder="octocat"
+               class="flex-1 border-4 border-black bg-white pl-9 pr-3 py-3 font-mono text-sm md:text-base placeholder:text-gray-400 focus:outline-none focus:shadow-brutal-sm" />
+        <button id="gh-submit" type="submit"
+                class="bg-signal text-white font-pixel text-xs md:text-sm uppercase border-4 border-black shadow-brutal px-6 py-3 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-transform">
+          Fetch Repos &raquo;
+        </button>
+      </form>
+
+      <!-- Status / Fehler -->
+      <div id="gh-status" class="mt-6 hidden max-w-3xl"></div>
+
+      <!-- Ergebnis-Liste -->
+      <ul id="gh-results" class="mt-8 grid sm:grid-cols-2 gap-6 md:gap-8"></ul>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SEKTION 3: AI CODING BENCHMARK (TOP 10 CODING LLMs)
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
+
+    <!-- Hintergrund-Raster -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- Schwebende Pixel-Collage -->
+    <div aria-hidden="true" class="pointer-events-none">
+      <svg class="floaty absolute top-16 left-10 w-10 h-10"
+           style="--r:-12deg" viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="12,1 15,9 23,9 16.5,14 19,22 12,17 5,22 7.5,14 1,9 9,9" />
+      </svg>
+      <svg class="floaty absolute top-1/2 right-8 w-12 h-12"
+           style="--r:6deg; animation-delay:.4s" viewBox="0 0 24 24" fill="#FF0000">
+        <polygon points="13,1 3,14 11,14 9,23 21,9 13,9 15,1" />
+      </svg>
+      <svg class="floaty absolute bottom-16 right-1/4 w-8 h-8"
+           style="--r:0deg; animation-delay:1s" viewBox="0 0 24 24" fill="#000">
+        <polygon points="12,21 3,12 3,7 7,4 11,4 12,6 13,4 17,4 21,7 21,12" stroke="#000" stroke-width="2" />
+      </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto">
+      <!-- Tag-Pill -->
+      <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+        <span class="w-2 h-2 bg-signal"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">leaderboard // 2026</span>
+      </div>
+
+      <!-- Überschrift -->
+      <h2 class="font-pixel text-cobalt text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] uppercase">
+        Benchmarks<br/>The Coding Gods
+      </h2>
+
+      <p class="mt-6 font-mono text-base md:text-lg max-w-2xl text-black">
+        Die Top 10 Coding-LLMs des Jahres 2026, gemessen am SWE-Bench Score. Wer regiert das Repo?
+      </p>
+
+      <!-- Brutalistische Tabelle -->
+      <div class="relative mt-12 overflow-x-auto">
+        <table class="w-full border-4 border-black border-collapse bg-white font-mono text-xs md:text-sm">
+          <thead>
+            <tr class="bg-signal text-white">
+              <th class="border-4 border-black p-2 md:p-3 text-left font-pixel text-[10px] md:text-xs uppercase">Rank</th>
+              <th class="border-4 border-black p-2 md:p-3 text-left font-pixel text-[10px] md:text-xs uppercase">Model</th>
+              <th class="border-4 border-black p-2 md:p-3 text-left font-pixel text-[10px] md:text-xs uppercase">SWE-Bench</th>
+              <th class="border-4 border-black p-2 md:p-3 text-left font-pixel text-[10px] md:text-xs uppercase">Speed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 1. WINNER -->
+            <tr class="relative">
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#1</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold relative">
+                <span class="relative inline-block">
+                  GPT-5.5
+                  <!-- Hand-drawn roter Marker-Kreis (perfekt mittig um den Text) -->
+                  <svg class="absolute -inset-2 w-[calc(100%+1.5rem)] h-[calc(100%+1.5rem)] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none marker-circle"
+                       viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M10 30 C 10 10, 60 4, 100 6 C 140 8, 190 14, 190 30 C 190 50, 140 56, 100 54 C 60 52, 10 50, 10 30 Z"
+                          stroke="#FF0000" stroke-width="4" stroke-linecap="round" />
+                  </svg>
+                </span>
+                <span class="ml-2 inline-block bg-signal text-white font-pixel text-[8px] md:text-[10px] px-1.5 py-0.5">WINNER</span>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <!-- 8-Bit Balken: 9 von 10 rot -->
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">88.7%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 2 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#2</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Claude Opus 4.8</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">87.6%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 3 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#3</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Claude Sonnet 5</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">79.6%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 4 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#4</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Gemini 3.5 Flash</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">79.3%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 5 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#5</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">GLM-5</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">77.8%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 6 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#6</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Kimi K2.5</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">76.8%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 7 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#7</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Qwen 3.5</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">76.4%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 8 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#8</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">Step-3.5-Flash</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">74.4%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 9 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#9</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">DeepSeek V4 Pro</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">67.8%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+            <!-- 10 -->
+            <tr>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">#10</td>
+              <td class="border-4 border-black p-2 md:p-3 font-bold">GPT-oss 120B</td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-signal border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                    <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  </div>
+                  <span class="font-bold">62.4%</span>
+                </div>
+              </td>
+              <td class="border-4 border-black p-2 md:p-3">
+                <div class="flex gap-0.5">
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-cobalt border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                  <span class="w-2 h-4 bg-gray-200 border-2 border-black"></span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Legende -->
+      <div class="mt-6 flex flex-wrap items-center gap-4 font-mono text-xs md:text-sm">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 bg-signal border-2 border-black"></span>
+          <span>= SWE-Bench Score (10 = 100%)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 bg-cobalt border-2 border-black"></span>
+          <span>= Speed Rating (5 = fastest)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       SEKTION 3: AI DESIGN PROMPTS REGISTRY (21ST.DEV STYLE)
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
+
+    <!-- Hintergrund-Raster -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- Schwebende Sparkles & Cursor-Icons -->
+    <div aria-hidden="true" class="pointer-events-none">
+      <!-- Sparkle 1 -->
+      <svg class="floaty absolute top-12 left-16 w-8 h-8"
+           style="--r:0deg" viewBox="0 0 24 24" fill="#FF0000">
+        <polygon points="12,2 14,10 22,12 14,14 12,22 10,14 2,12 10,10" />
+      </svg>
+      <!-- Sparkle 2 -->
+      <svg class="floaty absolute top-32 right-24 w-6 h-6"
+           style="--r:0deg; animation-delay:.4s" viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="12,2 14,10 22,12 14,14 12,22 10,14 2,12 10,10" />
+      </svg>
+      <!-- Sparkle 3 -->
+      <svg class="floaty absolute bottom-32 left-1/3 w-7 h-7"
+           style="--r:0deg; animation-delay:.8s" viewBox="0 0 24 24" fill="#000">
+        <polygon points="12,2 14,10 22,12 14,14 12,22 10,14 2,12 10,10" />
+      </svg>
+      <!-- Sparkle 4 -->
+      <svg class="floaty absolute top-1/2 right-12 w-6 h-6"
+           style="--r:0deg; animation-delay:1.2s" viewBox="0 0 24 24" fill="#FF0000">
+        <polygon points="12,2 14,10 22,12 14,14 12,22 10,14 2,12 10,10" />
+      </svg>
+      <!-- Cursor-Icons -->
+      <svg class="absolute top-1/3 left-8 w-8 h-8"
+           viewBox="0 0 24 24" fill="#0000FF">
+        <polygon points="5,3 5,19 9,15 12,21 14,20 11,14 17,14" />
+      </svg>
+      <svg class="floaty absolute bottom-20 right-1/3 w-8 h-8"
+           style="--r:10deg; animation-delay:1.6s" viewBox="0 0 24 24" fill="#000">
+        <polygon points="5,3 5,19 9,15 12,21 14,20 11,14 17,14" />
+      </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto">
+      <!-- Tag-Pill -->
+      <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+        <span class="w-2 h-2 bg-cobalt"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">registry // 4 prompts</span>
+      </div>
+
+      <!-- Überschrift -->
+      <h2 class="font-pixel text-signal text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] uppercase">
+        Prompt Bazaar<br/>Vibe Coding Blocks
+      </h2>
+
+      <p class="mt-6 font-mono text-base md:text-lg max-w-2xl text-black">
+        Copy-paste component prompts for v0 / Claude Code.
+      </p>
+
+      <!-- Karten-Grid -->
+      <div class="relative mt-14 grid sm:grid-cols-2 lg:grid-cols-2 gap-10 md:gap-8">
+
+        <!-- KARTE 1: Brutalist Button -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black">
+            <!-- Live-Preview -->
+            <div class="bg-white border-b-4 border-black p-6 md:p-8 flex items-center justify-center min-h-[140px]">
+              <button class="bg-signal text-white font-pixel text-xs md:text-sm uppercase border-4 border-black shadow-brutal px-5 py-3 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-transform">
+                Ship it &raquo;
+              </button>
+            </div>
+            <!-- Code-Feld -->
+            <div class="bg-gray-100 border-t-4 border-black p-4 font-mono text-[11px] md:text-xs leading-relaxed text-black">
+              <p class="text-cobalt font-bold mb-1">// brutalist_button.txt</p>
+              <p>"Create a brutalist button:</p>
+              <p>- Red bg (#FF0000), white text,</p>
+              <p>  thick black border (4px),</p>
+              <p>- 8-bit pixel font,</p>
+              <p>- hard offset shadow (no blur),</p>
+              <p>- shifts 2px on hover."</p>
+            </div>
+            <!-- Copy-Button -->
+            <div class="p-3 border-t-4 border-black">
+              <button class="w-full bg-black text-white font-mono text-xs md:text-sm font-bold uppercase border-4 border-black py-2.5 hover:bg-signal hover:text-black transition-colors">
+                Copy Prompt &raquo;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KARTE 2: Signup Form -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-black border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black">
+            <div class="bg-white border-b-4 border-black p-6 md:p-8 min-h-[140px] flex flex-col gap-2">
+              <input type="text" placeholder="your@email.com" disabled
+                     class="border-4 border-black bg-white px-3 py-2 font-mono text-xs md:text-sm" />
+              <button class="bg-cobalt text-white font-pixel text-[10px] md:text-xs uppercase border-4 border-black py-2">
+                Subscribe
+              </button>
+            </div>
+            <div class="bg-gray-100 border-t-4 border-black p-4 font-mono text-[11px] md:text-xs leading-relaxed text-black">
+              <p class="text-cobalt font-bold mb-1">// signup_form.txt</p>
+              <p>"Build a brutalist newsletter form:</p>
+              <p>- Email input with thick black</p>
+              <p>  border, monospace placeholder,</p>
+              <p>- Cobalt blue CTA button,</p>
+              <p>- pixel font label,</p>
+              <p>- hard offset shadow on focus."</p>
+            </div>
+            <div class="p-3 border-t-4 border-black">
+              <button class="w-full bg-black text-white font-mono text-xs md:text-sm font-bold uppercase border-4 border-black py-2.5 hover:bg-signal hover:text-black transition-colors">
+                Copy Prompt &raquo;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KARTE 3: Chat Bubble -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black">
+            <div class="bg-white border-b-4 border-black p-6 md:p-8 min-h-[140px] flex flex-col gap-2">
+              <div class="self-start bg-white border-4 border-black px-3 py-2 font-mono text-xs">
+                yo, ready to ship?
+              </div>
+              <div class="self-end bg-signal text-white border-4 border-black px-3 py-2 font-mono text-xs">
+                let's gooo!
+              </div>
+            </div>
+            <div class="bg-gray-100 border-t-4 border-black p-4 font-mono text-[11px] md:text-xs leading-relaxed text-black">
+              <p class="text-cobalt font-bold mb-1">// chat_bubble.txt</p>
+              <p>"Design a brutalist chat UI:</p>
+              <p>- Two bubble styles (incoming white,</p>
+              <p>  outgoing red),</p>
+              <p>- 4px black borders, no rounded</p>
+              <p>  corners, monospace text,</p>
+              <p>- hard offset shadows on bubbles."</p>
+            </div>
+            <div class="p-3 border-t-4 border-black">
+              <button class="w-full bg-black text-white font-mono text-xs md:text-sm font-bold uppercase border-4 border-black py-2.5 hover:bg-signal hover:text-black transition-colors">
+                Copy Prompt &raquo;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KARTE 4: Terminal Card -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-black border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black">
+            <div class="bg-white border-b-4 border-black p-3 md:p-4 min-h-[140px]">
+              <div class="bg-black border-4 border-black p-3 font-mono text-[10px] md:text-xs text-white">
+                <p><span class="text-signal">$</span> npm run dev</p>
+                <p class="text-gray-400">&gt; ready on localhost:3000</p>
+                <p><span class="blink">█</span></p>
+              </div>
+            </div>
+            <div class="bg-gray-100 border-t-4 border-black p-4 font-mono text-[11px] md:text-xs leading-relaxed text-black">
+              <p class="text-cobalt font-bold mb-1">// terminal_card.txt</p>
+              <p>"Create a fake terminal card:</p>
+              <p>- Black background, white mono text,</p>
+              <p>- blinking cursor block,</p>
+              <p>- red '$' prompt,</p>
+              <p>- thick black border + hard shadow."</p>
+            </div>
+            <div class="p-3 border-t-4 border-black">
+              <button class="w-full bg-black text-white font-mono text-xs md:text-sm font-bold uppercase border-4 border-black py-2.5 hover:bg-signal hover:text-black transition-colors">
+                Copy Prompt &raquo;
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom-Note -->
+      <div class="mt-12 border-4 border-black bg-white p-4 md:p-5 font-mono text-xs md:text-sm">
+        <span class="font-bold">// how to use:</span> copy the prompt, paste it into v0.dev or Claude Code, ship in seconds.
+      </div>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    'use strict';
+    var form      = document.getElementById('gh-form');
+    var input     = document.getElementById('gh-user');
+    var submit    = document.getElementById('gh-submit');
+    var statusEl  = document.getElementById('gh-status');
+    var resultsEl = document.getElementById('gh-results');
+
+    function setStatus(kind, html) {
+      var palette = {
+        info:    'bg-cobalt text-white',
+        success: 'bg-white text-black',
+        error:   'bg-signal text-white'
+      };
+      statusEl.className = 'mt-6 max-w-3xl border-4 border-black px-4 py-3 font-mono text-xs md:text-sm ' + palette[kind];
+      statusEl.innerHTML = html;
+    }
+
+    function clearResults() {
+      resultsEl.innerHTML = '';
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function timeAgo(iso) {
+      var d = new Date(iso);
+      var diff = (Date.now() - d.getTime()) / 1000;
+      if (diff < 60)     return 'just now';
+      if (diff < 3600)   return Math.floor(diff / 60)      + 'm ago';
+      if (diff < 86400)  return Math.floor(diff / 3600)    + 'h ago';
+      if (diff < 2592000)  return Math.floor(diff / 86400)   + 'd ago';
+      if (diff < 31536000) return Math.floor(diff / 2592000) + 'mo ago';
+      return Math.floor(diff / 31536000) + 'y ago';
+    }
+
+    function langColor(name) {
+      var map = {
+        'JavaScript': '#F1E05A', 'TypeScript': '#3178C6', 'Python': '#3572A5',
+        'Go': '#00ADD8', 'Rust': '#DEA584', 'HTML': '#E34C26', 'CSS': '#563D7C',
+        'Java': '#B07219', 'Kotlin': '#A97BFF', 'Swift': '#F05138', 'C++': '#F34B7D',
+        'C': '#555555', 'C#': '#178600', 'Ruby': '#701516', 'PHP': '#4F5D95',
+        'Shell': '#89E051', 'Dart': '#00B4AB', 'Vue': '#41B883'
+      };
+      return map[name] || '#000000';
+    }
+
+    function renderRepos(repos) {
+      clearResults();
+      if (!repos.length) {
+        setStatus('info', 'Keine Public Repos gefunden. Vielleicht alles auf Private?');
+        return;
+      }
+      var frag = document.createDocumentFragment();
+      repos.forEach(function (r) {
+        var li = document.createElement('li');
+        li.className = 'relative';
+        li.innerHTML =
+          '<div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-cobalt border-4 border-black"></div>' +
+          '<div class="relative bg-white border-4 border-black p-4 md:p-5 flex flex-col gap-3">' +
+            '<div class="flex items-start justify-between gap-2">' +
+              '<a href="' + escapeHtml(r.html_url) + '" target="_blank" rel="noopener noreferrer" ' +
+                 'class="font-bold text-sm md:text-base break-all hover:underline">' +
+                escapeHtml(r.name) +
+              '</a>' +
+              '<span class="shrink-0 inline-flex items-center gap-1 border-2 border-black px-1.5 py-0.5 font-mono text-[10px] md:text-xs">' +
+                '&#9733; ' + escapeHtml(r.stargazers_count) +
+              '</span>' +
+            '</div>' +
+            (r.description
+              ? '<p class="font-mono text-xs md:text-sm text-black">' + escapeHtml(r.description) + '</p>'
+              : '<p class="font-mono text-xs md:text-sm text-gray-500 italic">// no description</p>') +
+            '<div class="flex flex-wrap items-center gap-2 font-mono text-[10px] md:text-xs uppercase">' +
+              (r.language
+                ? '<span class="inline-flex items-center gap-1 border-2 border-black px-1.5 py-0.5">' +
+                    '<span class="w-2 h-2 inline-block" style="background:' + langColor(r.language) + '"></span>' +
+                    escapeHtml(r.language) +
+                  '</span>'
+                : '') +
+              '<span class="text-gray-600">updated ' + escapeHtml(timeAgo(r.updated_at)) + '</span>' +
+            '</div>' +
+            '<div class="bg-black border-4 border-black p-2.5 font-mono text-[10px] md:text-xs text-white break-all">' +
+              '<span class="text-signal">$</span> git clone ' + escapeHtml(r.clone_url) +
+            '</div>' +
+            '<button type="button" data-clone="' + escapeHtml(r.clone_url) + '" ' +
+                    'class="clone-btn w-full bg-black text-white font-mono text-xs md:text-sm font-bold uppercase border-4 border-black py-2 hover:bg-signal hover:text-black transition-colors">' +
+              'Copy Clone URL &raquo;' +
+            '</button>' +
+          '</div>';
+        frag.appendChild(li);
+      });
+      resultsEl.appendChild(frag);
+    }
+
+    resultsEl.addEventListener('click', function (e) {
+      var btn = e.target.closest('.clone-btn');
+      if (!btn) return;
+      var url = btn.getAttribute('data-clone');
+      var done = function () { btn.textContent = 'Copied! &raquo;'; };
+      var fail = function () { btn.textContent = 'Copy failed – select manually'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function () {
+          legacyCopy(url) ? done() : fail();
+        });
+      } else {
+        legacyCopy(url) ? done() : fail();
+      }
+      setTimeout(function () { btn.innerHTML = 'Copy Clone URL &raquo;'; }, 1800);
+    });
+
+    function legacyCopy(text) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e) { return false; }
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var user = input.value.trim();
+      if (!user) return;
+
+      clearResults();
+      setStatus('info', 'Frage GitHub nach <span class="font-bold">@' + escapeHtml(user) + '</span> &hellip;');
+      submit.disabled = true;
+      submit.classList.add('opacity-60');
+
+      fetch('https://api.github.com/users/' + encodeURIComponent(user) + '/repos?per_page=30&sort=updated', {
+        headers: { 'Accept': 'application/vnd.github+json' }
+      })
+      .then(function (res) {
+        if (res.status === 404) throw new Error('User nicht gefunden: @' + user);
+        if (res.status === 403) throw new Error('GitHub Rate-Limit erreicht. Bitte in 1h erneut versuchen.');
+        if (!res.ok) throw new Error('GitHub API Fehler (HTTP ' + res.status + ')');
+        return res.json();
+      })
+      .then(function (data) {
+        if (!Array.isArray(data)) throw new Error('Unerwartete Antwort der API.');
+        setStatus('success',
+          '<span class="font-bold">' + data.length + '</span> Public Repos für ' +
+          '<span class="font-bold">@' + escapeHtml(user) + '</span> geladen.'
+        );
+        renderRepos(data);
+      })
+      .catch(function (err) {
+        clearResults();
+        setStatus('error', escapeHtml(err.message || String(err)));
+      })
+      .then(function () {
+        submit.disabled = false;
+        submit.classList.remove('opacity-60');
+      });
+    });
+  })();
+  </script>
+
+</body>
+</html>

@@ -379,6 +379,155 @@
   </section>
 
   <!-- =========================================================
+       SEKTION 1b: GITHUB UPDATE GUIDE
+       ========================================================= -->
+  <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
+
+    <!-- Hintergrund-Raster -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image:
+            linear-gradient(#000 1px, transparent 1px),
+            linear-gradient(90deg, #000 1px, transparent 1px);
+            background-size: 32px 32px;"></div>
+
+    <!-- Schwebende Pixel-Collage -->
+    <div aria-hidden="true" class="pointer-events-none">
+      <svg class="floaty absolute top-14 left-10 w-10 h-10"
+           style="--r:6deg" viewBox="0 0 24 24" fill="#FF0000">
+        <polygon points="13,1 3,14 11,14 9,23 21,9 13,9 15,1" />
+      </svg>
+      <svg class="floaty absolute bottom-16 right-12 w-9 h-9"
+           style="--r:-12deg; animation-delay:.5s" viewBox="0 0 24 24" fill="#000">
+        <polygon points="12,1 15,9 23,9 16.5,14 19,22 12,17 5,22 7.5,14 1,9 9,9" />
+      </svg>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto">
+      <!-- Tag-Pill -->
+      <div class="inline-flex items-center gap-2 border-4 border-black bg-white shadow-brutal-sm px-3 py-1.5 mb-8">
+        <span class="w-2 h-2 bg-signal"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">guide_02 // 4 schritte</span>
+      </div>
+
+      <!-- Überschrift -->
+      <h2 class="font-pixel text-cobalt text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] uppercase">
+        Guide 02.<br/>Update from your PC
+      </h2>
+
+      <p class="mt-6 font-mono text-base md:text-lg max-w-2xl text-black">
+        Du hast schon deployed? Dann hier dein Update-Loop. Ändern, committen, pushen — fertig.
+      </p>
+
+      <!-- Steps Grid -->
+      <div class="relative mt-14 grid md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8">
+
+        <!-- STEP 01 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-signal border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-cobalt text-xl md:text-2xl">01</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">pull</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> git pull origin main</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> sync mit github
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 02 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-signal border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-cobalt text-xl md:text-2xl">02</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">edit</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> code .</p>
+              <p class="text-white/60">// ändere deine files</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> baue, was du willst
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 03 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-signal border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-cobalt text-xl md:text-2xl">03</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">commit</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> git add .</p>
+              <p><span class="text-signal">$</span> git commit -m "tweak v2"</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> stage &amp; commit
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 04 -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 translate-x-3 translate-y-3 bg-signal border-4 border-black"></div>
+          <div class="relative bg-white border-4 border-black p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-pixel text-cobalt text-xl md:text-2xl">04</span>
+              <span class="font-mono text-[10px] md:text-xs uppercase border-2 border-black px-2 py-0.5">push</span>
+            </div>
+            <div class="bg-black border-4 border-black p-3 md:p-4 font-mono text-[10px] md:text-xs text-white leading-relaxed">
+              <p><span class="text-signal">$</span> git push</p>
+            </div>
+            <div class="relative mt-5 pl-2">
+              <svg class="absolute -left-1 -top-2 w-16 h-12"
+                   viewBox="0 0 100 60" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 50 C 20 15, 50 5, 85 25" />
+                <path d="M85 25 L 72 20 M85 25 L 80 38" />
+              </svg>
+              <p class="font-mono text-xs md:text-sm pl-14">
+                <span class="font-bold">// note:</span> live in sekunden
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom-Note -->
+      <div class="mt-12 border-4 border-black bg-white p-4 md:p-5 font-mono text-xs md:text-sm">
+        <span class="font-bold">// pro tip:</span> bei <code class="bg-gray-200 px-1">git push</code> ohne <code class="bg-gray-200 px-1">-u</code> funktioniert's, sobald du einmal gepusht hast. kein remote mehr nötig.
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
        SEKTION 2: GITHUB REPO LOOKUP (LIVE)
        ========================================================= -->
   <section class="relative bg-white px-6 py-16 md:px-12 md:py-24 lg:py-28 border-t-4 border-black">
@@ -1193,6 +1342,104 @@
         submit.classList.remove('opacity-60');
       });
     });
+  })();
+  </script>
+
+  <!-- =========================================================
+       AUTH: Login-Modal + Header-Trigger
+       ========================================================= -->
+  <div id="cl-auth-host" class="fixed top-4 right-4 z-50 flex items-center gap-2"></div>
+
+  <div id="cl-auth-modal" class="hidden fixed inset-0 z-[60]">
+    <!-- Backdrop -->
+    <div data-auth-close class="absolute inset-0 bg-black/60"></div>
+    <!-- Dialog -->
+    <div class="relative z-10 max-w-sm mx-auto mt-24 bg-white border-4 border-black shadow-brutal-lg p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-pixel text-lg uppercase">Sign in</h2>
+        <button data-auth-close class="font-mono text-2xl leading-none px-2 -mr-2 hover:text-signal" aria-label="Schließen">&times;</button>
+      </div>
+      <p class="font-mono text-sm mb-5 text-black">
+        // login with your GitHub account
+      </p>
+      <button id="cl-github-login"
+              class="w-full flex items-center justify-center gap-2 bg-black text-white font-pixel text-xs uppercase
+                     border-4 border-black shadow-brutal px-4 py-3
+                     hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
+                     active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
+                     transition-transform">
+        <svg viewBox="0 0 24 24" class="w-5 h-5 fill-white" aria-hidden="true">
+          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.06.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.05.78 2.12 0 1.53-.01 2.77-.01 3.14 0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+        </svg>
+        Continue with GitHub
+      </button>
+      <p id="cl-auth-error" class="hidden mt-4 font-mono text-xs text-signal"></p>
+      <p class="mt-5 font-mono text-[11px] text-black/60">
+        // first time? you’ll get a fresh CodeLaunch profile.
+      </p>
+    </div>
+  </div>
+
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+  (function () {
+    var modal   = document.getElementById('cl-auth-modal');
+    var host    = document.getElementById('cl-auth-host');
+    var errEl   = document.getElementById('cl-auth-error');
+    var btnIn   = document.getElementById('cl-github-login');
+
+    function openModal()  { modal.classList.remove('hidden'); errEl.classList.add('hidden'); errEl.textContent = ''; }
+    function closeModal() { modal.classList.add('hidden'); }
+
+    modal.addEventListener('click', function (e) {
+      if (e.target && e.target.hasAttribute('data-auth-close')) closeModal();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    function renderUser(user) {
+      host.innerHTML = '';
+      if (!user) {
+        var b = document.createElement('button');
+        b.className = 'bg-white text-black font-pixel text-[10px] uppercase border-4 border-black shadow-brutal-sm px-3 py-2 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-transform';
+        b.textContent = 'Sign in';
+        b.addEventListener('click', openModal);
+        host.appendChild(b);
+        return;
+      }
+      var name = (user.displayName || user.email || 'User').toString();
+      var initial = name.charAt(0).toUpperCase();
+      var wrap = document.createElement('div');
+      wrap.className = 'flex items-center gap-2 bg-white border-4 border-black shadow-brutal-sm px-2 py-1';
+      wrap.innerHTML =
+        '<span class="w-7 h-7 bg-cobalt text-white font-pixel text-xs flex items-center justify-center border-2 border-black">' +
+          escapeHtml(initial) +
+        '</span>' +
+        '<span class="font-mono text-xs font-bold pr-1 hidden sm:inline">' + escapeHtml(name) + '</span>' +
+        '<button id="cl-signout" class="font-mono text-[11px] underline decoration-signal hover:text-signal">sign out</button>';
+      host.appendChild(wrap);
+      document.getElementById('cl-signout').addEventListener('click', function () {
+        window.CodeLaunchAuth.signOut().catch(function (e) { console.error(e); });
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+      });
+    }
+
+    btnIn.addEventListener('click', function () {
+      errEl.classList.add('hidden'); errEl.textContent = '';
+      window.CodeLaunchAuth.signInWithGithub()
+        .then(function (cred) { closeModal(); console.log('signed in:', cred.user && cred.user.uid); })
+        .catch(function (e) {
+          errEl.textContent = e && e.message ? e.message : 'Sign-in fehlgeschlagen.';
+          errEl.classList.remove('hidden');
+        });
+    });
+
+    window.CodeLaunchAuth.onAuth(renderUser);
   })();
   </script>
 

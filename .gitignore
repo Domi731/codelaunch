@@ -43,5 +43,4 @@ Thumbs.db
 # --- Firebase-Konfiguration (optional) ---
 # Der firebase apiKey ist laut offizieller Doku kein Secret.
 # Sicherheit kommt von Authorized Domains + Security Rules.
-# Wenn du firebase-config.js trotzdem ignorieren willst:
-# firebase-config.js
+firebase-config.js

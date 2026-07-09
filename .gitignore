@@ -1,2 +1,5 @@
-# Firebase — enthält API-Keys, niemals einchecken
-firebase-config.js
+# Hinweis: firebase-config.js ist NICHT in der Ignore-Liste, weil der
+# apiKey bei Firebase-Web-Apps kein Secret ist (offizielle Doku). Echte
+# Sicherheit kommt von Authorized Domains + Security Rules. Wenn du
+# die Datei doch ignorieren willst, ergänze:
+# firebase-config.js

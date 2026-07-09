@@ -1373,7 +1373,7 @@
         </svg>
         Continue with GitHub
       </button>
-      <p id="cl-auth-error" class="hidden mt-4 font-mono text-xs text-signal"></p>
+      <p id="cl-auth-error" class="hidden mt-4 font-mono text-xs text-signal whitespace-pre-wrap break-words"></p>
       <p class="mt-5 font-mono text-[11px] text-black/60">
         // first time? you’ll get a fresh CodeLaunch profile.
       </p>
@@ -1429,14 +1429,27 @@
       });
     }
 
+    // Sofort rendern, damit der Button IMMER sichtbar ist —
+    // auch wenn Firebase (z. B. Config fehlt) nicht initialisiert werden kann.
+    renderUser(null);
+
     btnIn.addEventListener('click', function () {
       errEl.classList.add('hidden'); errEl.textContent = '';
       window.CodeLaunchAuth.signInWithGithub()
-        .then(function (cred) { closeModal(); console.log('signed in:', cred.user && cred.user.uid); })
+        .then(function () { closeModal(); /* Auth läuft über Redirect, danach Reload */ })
         .catch(function (e) {
-          errEl.textContent = e && e.message ? e.message : 'Sign-in fehlgeschlagen.';
+          errEl.textContent = (e && e.message) ? e.message : 'Sign-in fehlgeschlagen.';
           errEl.classList.remove('hidden');
         });
+    });
+
+    // Redirect-Result prüfen, falls der User von GitHub zurückkommt
+    window.CodeLaunchAuth.getRedirectResult().then(function (result) {
+      if (result && result.error) {
+        errEl.textContent = window.CodeLaunchAuth.explainError(result.error);
+        errEl.classList.remove('hidden');
+        openModal();
+      }
     });
 
     window.CodeLaunchAuth.onAuth(renderUser);

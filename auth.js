@@ -13,9 +13,18 @@
     });
   }
 
-  function getProvider() {
+  function getProvider(type) {
     if (!window.firebase) return null;
-    return new window.firebase.auth.GithubAuthProvider();
+    if (type === 'google') {
+      var provider = new window.firebase.auth.GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      return provider;
+    }
+    if (type === 'github') {
+      return new window.firebase.auth.GithubAuthProvider();
+    }
+    return null;
   }
 
   // Menschenlesbare Fehlertexte
@@ -87,12 +96,56 @@
     signInWithGithub: async function () {
       try {
         await this.init();
-        return await window.firebase.auth().signInWithRedirect(getProvider());
+        return await window.firebase.auth().signInWithRedirect(getProvider('github'));
       } catch (e) {
         var friendly = new Error(explainError(e));
         friendly.code = e && e.code;
         friendly.original = e;
         throw friendly;
+      }
+    },
+
+    signInWithGoogle: async function () {
+      try {
+        await this.init();
+        return await window.firebase.auth().signInWithRedirect(getProvider('google'));
+      } catch (e) {
+        var friendly = new Error(explainError(e));
+        friendly.code = e && e.code;
+        friendly.original = e;
+        throw friendly;
+      }
+    },
+
+    signInWithEmailAndPassword: async function (email, password) {
+      try {
+        await this.init();
+        return await window.firebase.auth().signInWithEmailAndPassword(email, password);
+      } catch (e) {
+        var friendly = new Error(explainError(e));
+        friendly.code = e && e.code;
+        friendly.original = e;
+        throw friendly;
+      }
+    },
+
+    createAccountWithEmailAndPassword: async function (email, password) {
+      try {
+        await this.init();
+        return await window.firebase.auth().createUserWithEmailAndPassword(email, password);
+      } catch (e) {
+        var friendly = new Error(explainError(e));
+        friendly.code = e && e.code;
+        friendly.original = e;
+        throw friendly;
+      }
+    },
+
+    getCurrentUser: function () {
+      try {
+        return window.firebase && window.firebase.auth ? window.firebase.auth().currentUser : null;
+      } catch (e) {
+        return null;
       }
     },
 

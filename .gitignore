@@ -35,7 +35,7 @@ Thumbs.db
 .idea/
 
 # --- Logs ---
-*.log
+.log
 
 # --- Opencode / Claude lokale Settings ---
 .claude/settings.local.json
@@ -43,4 +43,5 @@ Thumbs.db
 # --- Firebase-Konfiguration (optional) ---
 # Der firebase apiKey ist laut offizieller Doku kein Secret.
 # Sicherheit kommt von Authorized Domains + Security Rules.
+
 firebase-config.js

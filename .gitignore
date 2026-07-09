@@ -1,5 +1,47 @@
-# Hinweis: firebase-config.js ist NICHT in der Ignore-Liste, weil der
-# apiKey bei Firebase-Web-Apps kein Secret ist (offizielle Doku). Echte
-# Sicherheit kommt von Authorized Domains + Security Rules. Wenn du
-# die Datei doch ignorieren willst, ergänze:
+# --- Umgebungsvariablen und Secrets ---
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+
+# --- Private Keys und Zertifikate ---
+*.pem
+*.key
+*.pfx
+*.p12
+*.p8
+
+# --- Firebase Admin SDK / Service Account Credentials ---
+*serviceAccount*.json
+*service_account*.json
+*firebase-adminsdk*.json
+credentials*.json
+
+# --- Dependencies ---
+node_modules/
+
+# --- Build-Output ---
+dist/
+build/
+out/
+
+# --- OS-Metadaten ---
+.DS_Store
+Thumbs.db
+
+# --- Editor-Konfiguration ---
+.vscode/
+.idea/
+
+# --- Logs ---
+*.log
+
+# --- Opencode / Claude lokale Settings ---
+.claude/settings.local.json
+
+# --- Firebase-Konfiguration (optional) ---
+# Der firebase apiKey ist laut offizieller Doku kein Secret.
+# Sicherheit kommt von Authorized Domains + Security Rules.
+# Wenn du firebase-config.js trotzdem ignorieren willst:
 # firebase-config.js

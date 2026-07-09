@@ -211,7 +211,7 @@
 
             <!-- "Code" Inhalt -->
             <div class="p-5 font-mono text-sm md:text-base leading-relaxed bg-white">
-              <p><span class="text-cobalt font-bold">$</span> codelaunch init</p>
+              <p><span class="text-cobalt font-bold">$</span> codelaunch</p>
               <p class="text-gray-700">  &gt; thinking </p>
               <p class="text-gray-700">  &gt; coding </p>
               <p class="text-signal font-bold">  &gt; READY TO SHIP.</p>
@@ -1492,7 +1492,9 @@
         emailInput.value = '';
         passwordInput.value = '';
         closeModal();
-        renderUser(window.CodeLaunchAuth.getCurrentUser());
+        window.CodeLaunchAuth.init().then(function (auth) {
+          renderUser(auth.currentUser);
+        });
       }).catch(function (e) {
         showError((e && e.message) ? e.message : 'E-Mail-Login fehlgeschlagen.');
       });
@@ -1528,8 +1530,8 @@
     btnEmailSignIn.addEventListener('click', function () { handleEmailAuth('signin'); });
     btnEmailCreate.addEventListener('click', function () { handleEmailAuth('create'); });
 
-    // Firebase-Status beobachten und Redirect-Ergebnis prüfen.
-    window.CodeLaunchAuth.onAuth(renderUser);
+    // Erst Redirect-Ergebnis prüfen, dann Firebase-Status beobachten,
+    // damit onAuthStateChanged nicht vorher renderUser(null) feuert.
     window.CodeLaunchAuth.getRedirectResult().then(function (result) {
       if (result && result.error) {
         showError(window.CodeLaunchAuth.explainError(result.error));
@@ -1538,8 +1540,10 @@
         closeModal();
         renderUser(result.user);
       }
+      window.CodeLaunchAuth.onAuth(renderUser);
     }).catch(function (e) {
       showError(window.CodeLaunchAuth.explainError(e));
+      window.CodeLaunchAuth.onAuth(renderUser);
     });
   })();
   </script>

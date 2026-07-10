@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeLaunch AI Terminal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'system-ui', 'monospace'],
+            mono:  ['"Space Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            signal:  '#FF0000',
+            cobalt:  '#0000FF',
+            ink:     '#000000',
+          },
+          boxShadow: {
+            'brutal':    '8px 8px 0 0 #000000',
+            'brutal-sm': '4px 4px 0 0 #000000',
+            'brutal-lg': '12px 12px 0 0 #000000',
+            'brutal-red':   '8px 8px 0 0 #FF0000',
+            'brutal-blue':  '8px 8px 0 0 #0000FF',
+          },
+          animation: {
+            'floaty': 'floaty 3.5s ease-in-out infinite',
+            'draw-circle': 'drawCircle 1.6s ease-out forwards',
+          },
+          keyframes: {
+            floaty: {
+              '0%, 100%': { transform: 'translateY(0) rotate(var(--r, 0deg))' },
+              '50%':      { transform: 'translateY(-10px) rotate(var(--r, 0deg))' },
+            },
+            drawCircle: {
+              to: { strokeDashoffset: '0' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Space Mono', ui-monospace, monospace; }
+    h1, h2, .pixel { font-family: 'Press Start 2P', monospace; letter-spacing: 0.02em; }
+    ::selection { background: #FF0000; color: #FFFFFF; }
+    .blink { animation: blink 1s steps(2, end) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Chat messages scrollable */
+    #chat-messages::-webkit-scrollbar { width: 8px; }
+    #chat-messages::-webkit-scrollbar-track { background: #f5f5f5; border-left: 2px solid #000; }
+    #chat-messages::-webkit-scrollbar-thumb { background: #000; }
+
+    .typing-indicator span {
+      display: inline-block; width: 8px; height: 8px; background: #000;
+      border-radius: 0; margin: 0 2px;
+      animation: typing-bounce 0.8s ease-in-out infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typing-bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+  </style>
+</head>
+
+<body class="bg-white text-black font-mono antialiased min-h-screen overflow-x-hidden">
+
+  <!-- =========================================================
+       HEADER
+       ========================================================= -->
+  <header class="border-b-4 border-black bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-4 md:py-5 flex flex-wrap items-center justify-between gap-4">
+
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 bg-signal border-2 border-black"></span>
+        <span class="w-3 h-3 bg-cobalt border-2 border-black"></span>
+        <span class="w-3 h-3 bg-white border-2 border-black"></span>
+        <span class="font-mono text-xs md:text-sm font-bold uppercase">~/codelaunch-ai-terminal</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 md:gap-3">
+        <!-- Model Selector -->
+        <select id="model-select"
+                class="bg-white border-4 border-black font-mono text-xs md:text-sm px-2 py-1.5
+                       hover:bg-black hover:text-white transition-colors cursor-pointer
+                       focus:outline-none focus:ring-2 focus:ring-signal">
+          <option value="deepseek-ai/deepseek-v4-flash">Kimi K2.6 (Basic)</option>
+          <option value="deepseek-ai/deepseek-v4-pro">DeepSeek V4 Pro</option>
+          <option value="minimaxai/minimax-m3">MiniMax 3</option>
+          <option value="z-ai/glm-5.2">GLM 5.2</option>
+        </select>
+
+        <!-- Back to Main -->
+        <a href="index.html"
+           class="border-4 border-black bg-white font-pixel text-[9px] md:text-[10px] uppercase px-3 py-1.5
+                  hover:bg-black hover:text-white hover:shadow-brutal-sm transition-all">
+          &larr; HOME
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       SETTINGS BAR (API Key + Pro Counter)
+       ========================================================= -->
+  <div class="border-b-4 border-black bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-2 md:py-3 flex flex-wrap items-center gap-2 md:gap-4">
+
+      <!-- Toggle Settings -->
+      <button id="settings-toggle"
+              class="font-mono text-xs md:text-sm border-4 border-black px-3 py-1
+                     hover:bg-black hover:text-white transition-colors">
+        [ settings ]
+      </button>
+
+      <!-- Pro Usage Counter (always visible) -->
+      <div class="flex items-center gap-1 font-mono text-xs md:text-sm">
+        <span class="w-2 h-2 bg-signal border-2 border-black"></span>
+        <span>Pro: <span id="pro-count-display" class="font-bold">0</span>/5</span>
+        <span class="text-gray-600">resets <span id="pro-reset-display" class="font-bold">--</span></span>
+      </div>
+
+      <!-- ===== Hidden Settings Panel ===== -->
+      <div id="settings-panel" class="hidden w-full mt-2 md:mt-3 p-4 bg-white border-4 border-black shadow-brutal-sm">
+
+        <!-- Own API Key Input -->
+        <label class="font-mono text-xs font-bold uppercase block mb-1">// own API key (optional):</label>
+        <div class="flex gap-2 mb-3">
+          <input id="custom-key-input" type="password"
+                 placeholder="nvapi-..."
+                 class="flex-1 border-4 border-black bg-white font-mono text-sm px-3 py-2
+                        focus:outline-none focus:border-cobalt focus:ring-0">
+          <button id="save-key-btn"
+                  class="bg-black text-white font-pixel text-[9px] md:text-[10px] uppercase
+                         border-4 border-black px-3 py-2
+                         hover:bg-signal hover:text-white transition-colors">
+            SAVE
+          </button>
+        </div>
+
+        <!-- Status messages -->
+        <p id="key-status" class="font-mono text-xs"></p>
+        <p class="font-mono text-[10px] text-gray-600 mt-1">
+          // key stored locally (localStorage). none leaves your browser.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       CHAT AREA
+       ========================================================= -->
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <!-- Chat Messages Container -->
+    <div id="chat-messages"
+         class="border-4 border-black bg-white shadow-brutal h-[55vh] md:h-[60vh] overflow-y-auto
+                p-4 md:p-6 font-mono text-sm md:text-base space-y-4"
+         style="background-image:
+                linear-gradient(#000 1px, transparent 1px),
+                linear-gradient(90deg, #000 1px, transparent 1px);
+                background-size: 40px 40px;
+                background-position: center;">
+    </div>
+
+    <!-- Input Area -->
+    <div class="mt-4 flex gap-2 md:gap-3">
+      <input id="chat-input" type="text"
+             placeholder="$ type your prompt ..."
+             class="flex-1 border-4 border-black bg-white font-mono text-sm md:text-base px-4 py-3
+                    shadow-brutal-sm
+                    focus:outline-none focus:border-cobalt focus:shadow-brutal transition-shadow"
+             autofocus>
+      <button id="send-btn"
+              class="bg-signal text-white font-pixel text-xs md:text-sm uppercase
+                     border-4 border-black shadow-brutal px-5 py-3 md:px-7 md:py-3.5
+                     hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
+                     active:translate-x-[4px] active:translate-y-[4px] active:shadow-none
+                     transition-transform disabled:opacity-50 disabled:cursor-not-allowed
+                     disabled:hover:translate-x-0 disabled:hover:translate-y-0">
+        SEND &gt;&gt;
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer class="border-t-4 border-black mt-8">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2
+                font-mono text-[10px] md:text-xs text-gray-600">
+      <span>// <span class="text-signal font-bold">Nvidia NIM</span> &bull; basic: unlimited &bull; pro: 5/3h</span>
+      <span><span class="font-bold">code:</span> brutally open-source</span>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       JAVASCRIPT: Chat Logic
+       ========================================================= -->
+  <script>
+    (function () {
+
+      // ==================== CONFIG ====================
+      // >>>>> FALLBACK API KEY <<<<<
+      // Ersetze unten mit deinem Nvidia Key. Bleibt client-seitig.
+      const FALLBACK_API_KEY = 'DEIN_NVIDIA_KEY_HIER';
+
+      const API_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
+
+      const MODELS = {
+        basic: ['deepseek-ai/deepseek-v4-flash'],
+        pro:   ['deepseek-ai/deepseek-v4-pro', 'minimaxai/minimax-m3', 'z-ai/glm-5.2'],
+      };
+
+      const PRO_LIMIT    = 5;
+      const PRO_WINDOW_S = 3 * 60 * 60; // 3 hours in seconds
+      const LS_PREFIX    = 'cl_nv_';
+
+      // ==================== DOM REFS ====================
+      const modelSelect    = document.getElementById('model-select');
+      const settingsToggle = document.getElementById('settings-toggle');
+      const settingsPanel  = document.getElementById('settings-panel');
+      const customKeyInput = document.getElementById('custom-key-input');
+      const saveKeyBtn     = document.getElementById('save-key-btn');
+      const keyStatus      = document.getElementById('key-status');
+      const proCountDisp   = document.getElementById('pro-count-display');
+      const proResetDisp   = document.getElementById('pro-reset-display');
+      const chatMessages   = document.getElementById('chat-messages');
+      const chatInput      = document.getElementById('chat-input');
+      const sendBtn        = document.getElementById('send-btn');
+
+      // Track pro model option elements
+      let proOptionEls = [];
+
+      // ==================== LOCAL STORAGE HELPERS ====================
+      function lsGet(key) {
+        try { return localStorage.getItem(LS_PREFIX + key); } catch (_) { return null; }
+      }
+      function lsSet(key, val) {
+        try { localStorage.setItem(LS_PREFIX + key, val); } catch (_) {}
+      }
+      function lsDel(key) {
+        try { localStorage.removeItem(LS_PREFIX + key); } catch (_) {}
+      }
+
+      // ==================== API KEY MANAGEMENT ====================
+      function getApiKey() {
+        var custom = lsGet('key');
+        if (custom && custom.trim().length > 0) return custom.trim();
+        return FALLBACK_API_KEY;
+      }
+
+      function hasCustomKey() {
+        var ck = lsGet('key');
+        return !!(ck && ck.trim().length > 0);
+      }
+
+      // ==================== PRO USAGE COUNTER ====================
+      function getProState() {
+        var count  = parseInt(lsGet('pro_count') || '0', 10) || 0;
+        var resetS = parseInt(lsGet('pro_reset') || '0', 10) || 0;
+        var nowS   = Math.floor(Date.now() / 1000);
+
+        if (nowS - resetS > PRO_WINDOW_S) {
+          count  = 0;
+          resetS = nowS;
+          lsSet('pro_count', '0');
+          lsSet('pro_reset', String(nowS));
+        }
+
+        return { count: count, resetS: resetS, nowS: nowS };
+      }
+
+      function useProSlot() {
+        var state = getProState();
+        state.count += 1;
+        lsSet('pro_count', String(state.count));
+        return state;
+      }
+
+      function formatResetTime(resetS, nowS) {
+        var remaining = PRO_WINDOW_S - (nowS - resetS);
+        if (remaining <= 0) return 'now';
+        var h = Math.floor(remaining / 3600);
+        var m = Math.floor((remaining % 3600) / 60);
+        if (h > 0) return h + 'h ' + m + 'm';
+        return m + 'm';
+      }
+
+      function updateProUI() {
+        var state = getProState();
+        var remaining = state.count >= PRO_LIMIT ? 0 : (PRO_LIMIT - state.count);
+        proCountDisp.textContent = String(state.count);
+
+        var resetLabel = formatResetTime(state.resetS, state.nowS);
+        proResetDisp.textContent = resetLabel;
+
+        // Gray out pro options if exhausted (and user has no custom key)
+        var exhausted = state.count >= PRO_LIMIT && !hasCustomKey();
+        proOptionEls.forEach(function (opt) {
+          opt.disabled = exhausted;
+          opt.style.opacity = exhausted ? '0.4' : '';
+        });
+
+        // If currently selected model is pro and exhausted, switch to basic
+        if (exhausted && MODELS.pro.indexOf(modelSelect.value) !== -1) {
+          modelSelect.value = MODELS.basic[0];
+        }
+      }
+
+      // ==================== MODEL SELECTION ====================
+      function initModelSelect() {
+        // Mark pro options for later reference
+        proOptionEls = [];
+        var opts = modelSelect.querySelectorAll('option');
+        opts.forEach(function (opt) {
+          if (MODELS.pro.indexOf(opt.value) !== -1) {
+            proOptionEls.push(opt);
+          }
+        });
+
+        modelSelect.addEventListener('change', function () {
+          var model = modelSelect.value;
+          var state = getProState();
+
+          if (MODELS.pro.indexOf(model) !== -1) {
+            if (state.count >= PRO_LIMIT && !hasCustomKey()) {
+              addSystemMessage('[!] PRO LIMIT REACHED (5/3h). Using BASIC instead.');
+              modelSelect.value = MODELS.basic[0];
+              updateProUI();
+            }
+          }
+        });
+      }
+
+      function getSelectedModel() {
+        return modelSelect.value;
+      }
+
+      function isProModel(model) {
+        return MODELS.pro.indexOf(model) !== -1;
+      }
+
+      // ==================== MESSAGES ====================
+      function addSystemMessage(text) {
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2 opacity-70';
+        div.innerHTML =
+          '<span class="text-signal font-bold shrink-0">[!]</span>' +
+          '<span class="text-xs md:text-sm">' + escapeHtml(text) + '</span>';
+        chatMessages.appendChild(div);
+        scrollToBottom();
+      }
+
+      function addUserMessage(text) {
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2';
+        div.innerHTML =
+          '<span class="text-cobalt font-bold shrink-0">$</span>' +
+          '<span class="font-bold whitespace-pre-wrap break-words">' + escapeHtml(text) + '</span>';
+        chatMessages.appendChild(div);
+        scrollToBottom();
+      }
+
+      function addAssistantMessage(text) {
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2 bg-black text-white border-4 border-black p-3 md:p-4';
+        div.innerHTML =
+          '<span class="text-signal font-bold shrink-0">&gt;</span>' +
+          '<span class="whitespace-pre-wrap break-words">' + escapeHtml(text) + '</span>';
+        chatMessages.appendChild(div);
+        scrollToBottom();
+      }
+
+      function addTypingIndicator() {
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2';
+        div.innerHTML =
+          '<span class="text-cobalt font-bold shrink-0 blink">&gt;</span>' +
+          '<span class="typing-indicator flex gap-1"><span></span><span></span><span></span></span>';
+        chatMessages.appendChild(div);
+        scrollToBottom();
+      }
+
+      function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
+      }
+
+      // ==================== STREAMING ====================
+      async function streamResponse(model, messages) {
+        var apiKey = getApiKey();
+        var body = JSON.stringify({
+          model: model,
+          messages: messages,
+          stream: true,
+          max_tokens: 4096,
+          temperature: 0.6,
+          top_p: 0.7,
+        });
+
+        var resp = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey,
+          },
+          body: body,
+        });
+
+        if (!resp.ok) {
+          var errText = await resp.text().catch(function () { return ''; });
+          var errMsg = 'API Error ' + resp.status + ': ' + resp.statusText;
+          try {
+            var j = JSON.parse(errText);
+            if (j.error && j.error.message) errMsg += ' — ' + j.error.message;
+          } catch (_) {}
+          throw new Error(errMsg);
+        }
+
+        var reader = resp.body.getReader();
+        var decoder = new TextDecoder('utf-8');
+        var fullText = '';
+        var buffer = '';
+
+        // Create assistant bubble placeholder
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2 bg-black text-white border-4 border-black p-3 md:p-4';
+        div.innerHTML =
+          '<span class="text-signal font-bold shrink-0">&gt;</span>' +
+          '<span class="whitespace-pre-wrap break-words"></span>';
+        chatMessages.appendChild(div);
+        var textSpan = div.querySelector('span:last-child');
+
+        while (true) {
+          var result = await reader.read();
+          if (result.done) break;
+          buffer += decoder.decode(result.value, { stream: true });
+
+          var lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line || !line.startsWith('data:')) continue;
+            var jsonStr = line.substring(4).trim();
+            if (jsonStr === '[DONE]') continue;
+            try {
+              var chunk = JSON.parse(jsonStr);
+              if (chunk.choices && chunk.choices.length > 0) {
+                var delta = chunk.choices[0].delta;
+                if (delta && delta.content) {
+                  fullText += delta.content;
+                  textSpan.textContent = fullText;
+                  scrollToBottom();
+                }
+              }
+            } catch (_) {}
+          }
+        }
+
+        // Flush remaining buffer
+        if (buffer.trim() && buffer.trim().startsWith('data:')) {
+          var remLine = buffer.trim().substring(4).trim();
+          if (remLine !== '[DONE]') {
+            try {
+              var chunk = JSON.parse(remLine);
+              if (chunk.choices && chunk.choices.length > 0) {
+                var delta = chunk.choices[0].delta;
+                if (delta && delta.content) {
+                  fullText += delta.content;
+                  textSpan.textContent = fullText;
+                  scrollToBottom();
+                }
+              }
+            } catch (_) {}
+          }
+        }
+
+        return { text: fullText };
+      }
+
+      // ==================== CHAT HISTORY ====================
+      var conversation = [];
+
+      function resetConversation() {
+        conversation = [];
+      }
+
+      // ==================== SEND ====================
+      async function handleSend() {
+        var text = chatInput.value.trim();
+        if (!text) return;
+
+        var model = getSelectedModel();
+        var state = getProState();
+
+        // Pro check
+        if (isProModel(model)) {
+          if (!hasCustomKey()) {
+            if (state.count >= PRO_LIMIT) {
+              addSystemMessage('[!] PRO LIMIT (5/3h) EXCEEDED. Use BASIC or add your own API key.');
+              return;
+            }
+          }
+        }
+
+        // Disable UI while streaming
+        sendBtn.disabled   = true;
+        chatInput.disabled = true;
+        sendBtn.textContent = '...';
+
+        addUserMessage(text);
+
+        // Build messages array
+        conversation.push({ role: 'user', content: text });
+        var messages = conversation.slice(); // shallow copy
+
+        // Track pro usage BEFORE the call
+        var isPro = isProModel(model);
+        if (isPro && !hasCustomKey()) {
+          state = useProSlot();
+          updateProUI();
+        }
+
+        try {
+          var result = await streamResponse(model, messages);
+          conversation.push({ role: 'assistant', content: result.text });
+        } catch (err) {
+          addSystemMessage('[X] ' + err.message);
+          // Remove the failed user message from conversation
+          conversation.pop();
+        }
+
+        // Re-enable UI
+        sendBtn.disabled   = false;
+        chatInput.disabled = false;
+        sendBtn.textContent = 'SEND >>';
+        chatInput.value = '';
+        chatInput.focus();
+        updateProUI();
+      }
+
+      // ==================== INIT UI ====================
+      function showWelcome() {
+        var div = document.createElement('div');
+        div.className = 'flex items-start gap-2 text-xs md:text-sm opacity-60';
+        div.innerHTML =
+          '<span class="text-cobalt font-bold shrink-0">#</span>' +
+          '<span>CodeLaunch AI Terminal v1.0 &mdash; type <span class="font-bold">$</span> prompt, press <span class="font-bold">SEND</span></span>';
+        chatMessages.appendChild(div);
+
+        // Model hint
+        var hint = document.createElement('div');
+        hint.className = 'flex items-start gap-2 text-[10px] md:text-xs opacity-40 mt-2';
+        hint.innerHTML =
+          '<span class="text-signal shrink-0">//</span>' +
+          '<span>model: <span class="font-bold">' + modelSelect.value + '</span> (select other models above)</span>';
+        chatMessages.appendChild(hint);
+      }
+
+      function initSettingsPanel() {
+        // Pre-fill if key exists
+        var saved = lsGet('key');
+        if (saved) {
+          customKeyInput.value = saved;
+          keyStatus.textContent = '// custom key active (' + saved.substring(0, 12) + '...)';
+          keyStatus.className = 'font-mono text-xs text-cobalt font-bold';
+        }
+
+        // Toggle
+        settingsToggle.addEventListener('click', function () {
+          var hidden = settingsPanel.classList.contains('hidden');
+          if (hidden) {
+            settingsPanel.classList.remove('hidden');
+            settingsToggle.textContent = '[ settings - ]';
+          } else {
+            settingsPanel.classList.add('hidden');
+            settingsToggle.textContent = '[ settings ]';
+          }
+        });
+
+        // Save key
+        function saveKey() {
+          var val = customKeyInput.value.trim();
+          if (val) {
+            lsSet('key', val);
+            keyStatus.textContent = '// custom key ::: ACTIVE (' + val.substring(0, 12) + '...)';
+            keyStatus.className = 'font-mono text-xs text-cobalt font-bold';
+            // With custom key, pro limit doesn't apply
+            updateProUI();
+            addSystemMessage('[ok] Custom key saved. Pro limits lifted.');
+          } else {
+            lsDel('key');
+            keyStatus.textContent = '// using default key (limits apply)';
+            keyStatus.className = 'font-mono text-xs';
+            updateProUI();
+            addSystemMessage('[ok] Custom key removed. Default limits active.');
+          }
+        }
+
+        saveKeyBtn.addEventListener('click', saveKey);
+        customKeyInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); saveKey(); }
+        });
+      }
+
+      // ==================== MAIN INIT ====================
+      function init() {
+        initModelSelect();
+        initSettingsPanel();
+        updateProUI();
+        showWelcome();
+
+        // Send on button click
+        sendBtn.addEventListener('click', handleSend);
+
+        // Send on Enter
+        chatInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (!sendBtn.disabled) handleSend();
+          }
+        });
+      }
+
+      init();
+
+    })();
+  </script>
+
+</body>
+</html>

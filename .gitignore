@@ -38,7 +38,7 @@ Thumbs.db
 *.log
 
 # --- Opencode / Claude lokale Settings ---
-.claude/settings.local.json
+.claude/
 
 # --- Firebase-Konfiguration (optional) ---
 # Der firebase apiKey ist laut offizieller Doku kein Secret.

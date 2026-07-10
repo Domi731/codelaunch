@@ -164,7 +164,7 @@
                   stroke="#FF0000" stroke-width="6" stroke-linecap="round" />
           </svg>
 
-          <a href="#start"
+          <a href="chat.html" target="_blank"
              class="relative inline-block bg-signal text-white font-pixel text-sm md:text-base uppercase
                     border-4 border-black shadow-brutal px-7 py-4 md:px-9 md:py-5
                     hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm
@@ -183,7 +183,7 @@
             <path d="M95 35 L 80 28 M95 35 L 88 50" />
           </svg>
           <p class="font-mono text-sm md:text-base pl-24 md:pl-28 -mt-1">
-            <span class="font-bold">// note:</span> start coding here &rarr;
+            <span class="font-bold">// note:</span> open AI terminal &rarr;
           </p>
         </div>
       </div>
@@ -1465,7 +1465,7 @@
       document.getElementById('cl-signout').addEventListener('click', function () {
         window.CodeLaunchAuth.signOut()
           .then(function () { renderUser(null); })
-          .catch(function (e) { console.error(e); });
+          .catch(function (e) { /* silently ignore sign-out errors */ });
       });
     }
 

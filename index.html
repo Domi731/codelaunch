@@ -1465,7 +1465,7 @@
       document.getElementById('cl-signout').addEventListener('click', function () {
         window.CodeLaunchAuth.signOut()
           .then(function () { renderUser(null); })
-          .catch(function (e) { /* silently ignore sign-out errors */ });
+          .catch(function (e) { console.error(e); });
       });
     }
 
@@ -1533,16 +1533,16 @@
     // Erst Redirect-Ergebnis prüfen, dann Firebase-Status beobachten,
     // damit onAuthStateChanged nicht vorher renderUser(null) feuert.
     window.CodeLaunchAuth.getRedirectResult().then(function (result) {
-      if (result && result.error) {
-        showError(window.CodeLaunchAuth.explainError(result.error));
-        openModal();
-      } else if (result && result.user) {
+      if (result && result.user) {
         closeModal();
         renderUser(result.user);
+      } else if (result && result.error) {
+        showError(window.CodeLaunchAuth.explainError(result.error));
+        openModal();
       }
       window.CodeLaunchAuth.onAuth(renderUser);
     }).catch(function (e) {
-      showError(window.CodeLaunchAuth.explainError(e));
+      console.error(e);
       window.CodeLaunchAuth.onAuth(renderUser);
     });
   })();
